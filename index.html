@@ -4,6 +4,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ChattQuisitions — Off-Market Deals</title>
+
+<!-- Favicon: CQ emblem -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%230a0a0a'/><text x='12' y='44' font-family='Georgia,serif' font-size='28' font-weight='700' fill='white'>C</text><text x='34' y='44' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.4)'>Q</text></svg>" />
+
+<!-- Default OG tags (main site) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="ChattQuisitions" />
+<meta property="og:title" content="Off Market Deals" />
+<meta property="og:description" content="We source, contract, and deliver off-market investment opportunities across Chattanooga. Built for local investors who move fast." />
+<meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%230a0a0a'/><circle cx='600' cy='220' r='80' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1'/><text x='560' y='238' font-family='Georgia,serif' font-size='72' font-weight='700' fill='white'>C</text><text x='612' y='238' font-family='Georgia,serif' font-size='72' font-weight='700' fill='rgba(255,255,255,0.4)'>Q</text><text x='600' y='370' font-family='Georgia,serif' font-size='64' font-weight='900' fill='white' text-anchor='middle' font-style='italic'>Off Market, On Purpose.</text><text x='600' y='430' font-family='Arial,sans-serif' font-size='24' fill='rgba(255,255,255,0.45)' text-anchor='middle' letter-spacing='4'>CHATTQUISITIONS.COM</text></svg>" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Off Market Deals" />
+<meta name="twitter:description" content="We source, contract, and deliver off-market investment opportunities across Chattanooga." />
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -998,6 +1012,13 @@ function shareDeal(id, address) {
 function showDealFocus(id) {
   const d = DEALS.find(x => x.id === id);
   if (!d) return;
+
+  // Update OG tags for this specific deal
+  document.title = `${d.address} — ChattQuisitions`;
+  document.querySelector('meta[property="og:title"]').setAttribute('content', d.address);
+  document.querySelector('meta[property="og:description"]').setAttribute('content', `${d.type} · ${d.city} · Ask: ${d.askingPrice} · ARV: ${d.arv}`);
+  document.querySelector('meta[name="twitter:title"]').setAttribute('content', d.address);
+  document.querySelector('meta[name="twitter:description"]').setAttribute('content', `${d.type} · ${d.city} · Ask: ${d.askingPrice} · ARV: ${d.arv}`);
   document.getElementById('main-content').classList.add('hidden');
   document.getElementById('deal-focus-page').classList.add('active');
   document.getElementById('deal-focus-card').innerHTML = `
