@@ -465,7 +465,35 @@
   .footer-logo span { color: rgba(255,255,255,0.35); }
   footer p { font-size: 12px; color: var(--muted); }
 
-  /* TOAST */
+  /* FOCUSED DEAL VIEW */
+  .deal-focus-page {
+    display: none;
+    min-height: 100vh;
+    background: var(--bg);
+    padding: 100px 48px 80px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .deal-focus-page.active { display: flex; }
+  .deal-focus-inner {
+    max-width: 480px;
+    width: 100%;
+  }
+  .deal-focus-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--muted); text-decoration: none;
+    font-size: 13px; letter-spacing: 0.05em;
+    margin-bottom: 32px;
+    transition: color 0.2s;
+  }
+  .deal-focus-back:hover { color: #fff; }
+  .main-content { display: block; }
+  .main-content.hidden { display: none; }
+
+  @media (max-width: 768px) {
+    .deal-focus-page { padding: 90px 16px 60px; }
+  }
   .toast {
     position: fixed; bottom: 32px; right: 32px; z-index: 999;
     background: #fff; color: #000;
@@ -530,6 +558,17 @@
 </style>
 </head>
 <body>
+
+<!-- FOCUSED DEAL PAGE -->
+<div class="deal-focus-page" id="deal-focus-page">
+  <div class="deal-focus-inner">
+    <a href="#" class="deal-focus-back" onclick="showHomepage(); return false;">← View All Deals</a>
+    <div id="deal-focus-card"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content" id="main-content">
 
 <!-- NAV -->
 <nav>
@@ -709,6 +748,8 @@
   <p>&copy; 2025 ChattQuisitions &nbsp;·&nbsp; Chattanooga, TN &nbsp;·&nbsp; Off-Market Real Estate</p>
 </footer>
 
+</div><!-- END MAIN CONTENT -->
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal" id="modal-content"></div>
@@ -830,7 +871,7 @@ function renderDeals(filter) {
         <div class="deal-description">${d.description.substring(0, 120)}...</div>
         <div class="deal-footer">
           <button class="deal-btn-primary" onclick="openModal(${d.id})">View Deal Sheet</button>
-          <button class="deal-btn-outline" onclick="contactAbout('${d.address}')">Inquire</button>
+          <button class="deal-btn-outline" onclick="shareDeal(${d.id}, '${d.address}')">Share</button>
         </div>
       </div>
     </div>
@@ -945,6 +986,76 @@ zipInput.addEventListener('blur', () => {
 document.querySelector('.zip-input-wrapper').addEventListener('click', () => zipInput.focus());
 
 
+// Share deal - copies link to clipboard
+function shareDeal(id, address) {
+  const url = `${window.location.origin}${window.location.pathname}?deal=${id}`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast(`Link copied — ${address}`);
+  });
+}
+
+// Show focused single deal page
+function showDealFocus(id) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('main-content').classList.add('hidden');
+  document.getElementById('deal-focus-page').classList.add('active');
+  document.getElementById('deal-focus-card').innerHTML = `
+    <div class="deal-card" style="cursor:default;transform:none;">
+      <div class="deal-img-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>
+        <div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-address">${d.address}</div>
+        <div class="deal-location">${d.city}</div>
+        <div class="deal-metrics">
+          <div class="metric"><span class="metric-val" style="${d.beds === null ? '' : ''}">${d.beds !== null ? `${d.beds}bd / ${d.baths}ba` : d.type}</span><div class="metric-key">${d.beds !== null ? 'Beds / Baths' : 'Type'}</div></div>
+          <div class="metric"><span class="metric-val">${d.sqft !== null ? d.sqft : '—'}</span><div class="metric-key">Sq Ft</div></div>
+          <div class="metric"><span class="metric-val" style="${!d.askingPrice.startsWith('$') ? 'font-size:11px;color:#ffcf70;font-style:italic;' : ''}">${d.askingPrice}</span><div class="metric-key">Ask Price</div></div>
+        </div>
+        <div class="deal-metrics" style="margin-top:-8px;">
+          <div class="metric"><span class="metric-val">${d.arv}</span><div class="metric-key">ARV</div></div>
+          <div class="metric"><span class="metric-val" style="${d.repairEst === 'N/A' || d.repairEst === 'TBD' ? 'font-size:12px;color:var(--muted);' : ''}">${d.repairEst}</span><div class="metric-key">Repair Est.</div></div>
+          <div class="metric" style="display:flex;align-items:center;justify-content:center;">
+            ${d.majors && d.majors.length > 0
+              ? `<span style="font-size:11px;color:#ffcf70;text-align:center;line-height:1.4;">⚠️ Needs:<br>${d.majors.join(', ')}</span>`
+              : `<span style="font-size:11px;color:rgba(100,220,130,0.9);text-align:center;line-height:1.4;">✅ No Major<br>Items</span>`
+            }
+          </div>
+        </div>
+        <div class="deal-description">${d.description}</div>
+        <div class="deal-footer">
+          <button class="deal-btn-primary" onclick="openModal(${d.id})">View Deal Sheet</button>
+          <button class="deal-btn-outline" onclick="shareDeal(${d.id}, '${d.address}')">Share</button>
+        </div>
+      </div>
+    </div>
+  `;
+  window.scrollTo(0, 0);
+}
+
+// Show homepage
+function showHomepage() {
+  document.getElementById('main-content').classList.remove('hidden');
+  document.getElementById('deal-focus-page').classList.remove('active');
+  history.pushState({}, '', window.location.pathname);
+}
+
+// URL routing on load
+function checkDealRoute() {
+  const params = new URLSearchParams(window.location.search);
+  const dealId = params.get('deal');
+  if (dealId) {
+    renderDeals('all');
+    showDealFocus(parseInt(dealId));
+  }
+}
+
+
 function animateStat(el, target, prefix, suffix, duration) {
   let start = null;
   const num = parseFloat(target.replace(/[^0-9.]/g,''));
@@ -960,6 +1071,7 @@ function animateStat(el, target, prefix, suffix, duration) {
 
 window.addEventListener('load', () => {
   renderDeals('all');
+  checkDealRoute();
 
   // Auto-calculate stats from DEALS data
   const totalDeals = DEALS.length;
