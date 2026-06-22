@@ -685,11 +685,20 @@
           <textarea placeholder="Min beds/baths, deal timeline, financing type, anything else..."></textarea>
         </div>
       </div>
+      <div class="form-group form-row-full" style="margin-bottom:12px;">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
+          <input type="checkbox" name="sms_transactional_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
+          <span>I consent to receive transactional/informational SMS messages from ChattQuisitions regarding my specific inquiry or submitted buy box (e.g. deal follow-ups, status updates). Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time.</span>
+        </label>
+      </div>
       <div class="form-group form-row-full" style="margin-bottom:16px;">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
-          <input type="checkbox" required style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
-          <span>By submitting this form, I consent to receive SMS text messages, calls, and emails from ChattQuisitions regarding my inquiry and investment criteria. Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time. Consent is not a condition of purchase. See our <a href="/privacy" style="color:#fff;text-decoration:underline;" target="_blank">Privacy Policy</a> and <a href="/terms" style="color:#fff;text-decoration:underline;" target="_blank">Terms of Service</a>.</span>
+          <input type="checkbox" name="sms_marketing_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
+          <span>I consent to receive promotional/marketing SMS messages from ChattQuisitions about new off-market deals and investment opportunities. Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time.</span>
         </label>
+      </div>
+      <div class="form-group form-row-full" style="margin-bottom:16px;">
+        <p style="font-size:11px;color:var(--muted);">Consent to receive SMS is not a condition of any purchase or service. See our <a href="/privacy" style="color:#fff;text-decoration:underline;" target="_blank">Privacy Policy</a> and <a href="/terms" style="color:#fff;text-decoration:underline;" target="_blank">Terms of Service</a>.</p>
       </div>
       <button type="submit" class="submit-btn">Submit &rarr;</button>
       <p class="form-note">We review every submission and will reach out directly when a match comes in.</p>
