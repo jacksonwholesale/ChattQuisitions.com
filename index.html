@@ -5,18 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ChattQuisitions — Off-Market Deals</title>
 
-<!-- Favicon: CQ emblem -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%230a0a0a'/><text x='12' y='44' font-family='Georgia,serif' font-size='28' font-weight='700' fill='white'>C</text><text x='34' y='44' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.4)'>Q</text></svg>" />
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="/favicon.png" />
+<link rel="apple-touch-icon" href="/favicon.png" />
 
 <!-- Default OG tags (main site) -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="ChattQuisitions" />
 <meta property="og:title" content="Off Market Deals" />
 <meta property="og:description" content="We source, contract, and deliver off-market investment opportunities across Chattanooga. Built for local investors who move fast." />
-<meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%230a0a0a'/><circle cx='600' cy='220' r='80' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1'/><text x='560' y='238' font-family='Georgia,serif' font-size='72' font-weight='700' fill='white'>C</text><text x='612' y='238' font-family='Georgia,serif' font-size='72' font-weight='700' fill='rgba(255,255,255,0.4)'>Q</text><text x='600' y='370' font-family='Georgia,serif' font-size='64' font-weight='900' fill='white' text-anchor='middle' font-style='italic'>Off Market, On Purpose.</text><text x='600' y='430' font-family='Arial,sans-serif' font-size='24' fill='rgba(255,255,255,0.45)' text-anchor='middle' letter-spacing='4'>CHATTQUISITIONS.COM</text></svg>" />
+<meta property="og:image" content="https://chattquisitions.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Off Market Deals" />
 <meta name="twitter:description" content="We source, contract, and deliver off-market investment opportunities across Chattanooga." />
+<meta name="twitter:image" content="https://chattquisitions.com/og-image.png" />
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
@@ -655,7 +659,7 @@
           <label>What's Your Max? (Budget)</label>
           <input type="text" placeholder="e.g. $180,000" />
         </div>
-        
+
         <div class="form-group form-row-full">
           <label>Preferred Areas / Zip Codes / County</label>
           <div class="zip-input-wrapper">
@@ -680,6 +684,12 @@
           <label>Additional Notes / Criteria</label>
           <textarea placeholder="Min beds/baths, deal timeline, financing type, anything else..."></textarea>
         </div>
+      </div>
+      <div class="form-group form-row-full" style="margin-bottom:16px;">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
+          <input type="checkbox" required style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
+          <span>By submitting this form, I consent to receive SMS text messages, calls, and emails from ChattQuisitions regarding my inquiry and investment criteria. Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time. Consent is not a condition of purchase. See our <a href="/privacy" style="color:#fff;text-decoration:underline;" target="_blank">Privacy Policy</a> and <a href="/terms" style="color:#fff;text-decoration:underline;" target="_blank">Terms of Service</a>.</span>
+        </label>
       </div>
       <button type="submit" class="submit-btn">Submit &rarr;</button>
       <p class="form-note">We review every submission and will reach out directly when a match comes in.</p>
@@ -757,9 +767,15 @@
 </section>
 
 <!-- FOOTER -->
-<footer>
+<footer style="flex-direction:column;gap:8px;text-align:center;padding:40px 24px;">
   <div class="footer-logo">Chatt<span>Quisitions</span></div>
-  <p>&copy; 2025 ChattQuisitions &nbsp;·&nbsp; Chattanooga, TN &nbsp;·&nbsp; Off-Market Real Estate</p>
+  <p>&copy; 2026 ChattQuisitions &nbsp;·&nbsp; Chattanooga, TN &nbsp;·&nbsp; Off-Market Real Estate</p>
+  <p style="font-size:11px;color:rgba(255,255,255,0.35);">ChattQuisitions is a brand operated by Mental Pictures LLC</p>
+  <p style="font-size:12px;">
+    <a href="/privacy" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Privacy Policy</a>
+    &nbsp;·&nbsp;
+    <a href="/terms" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Terms of Service</a>
+  </p>
 </footer>
 
 </div><!-- END MAIN CONTENT -->
@@ -773,123 +789,168 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const DEALS = [
+// Airtable config handled server-side via Netlify function
+
+// Fallback deals (shown if Airtable is unavailable)
+const FALLBACK_DEALS = [
   {
     id: 1,
-    address: "221 Curnutt Ln",
-    city: "Ten Mile, TN 37880",
-    badge: "active",
-    badgeLabel: "Active",
-    strategy: "flip",
-    strategyLabel: "New Build",
-    askingPrice: "Taking Offers",
-    arv: "$300,000",
-    repairEst: "TBD",
-    beds: null, baths: null, sqft: "1 Acre",
-    type: "Vacant Lot",
+    address: "221 Curnutt Ln", city: "Ten Mile, TN 37880",
+    badge: "active", badgeLabel: "Active",
+    strategy: "flip", strategyLabel: "New Build",
+    askingPrice: "Taking Offers", arv: "$300,000", repairEst: "TBD",
+    beds: null, baths: null, sqft: "1 Acre", type: "Vacant Lot",
     majors: [],
     description: "Vacant acre lot zoned FAR in a residential area of Meigs County, Tennessee. Walking distance from the lake. Buildable and ready for new construction.",
-    details: {
-      "Asking Price": "Taking Offers",
-      "Estimated ARV": "$300,000",
-      "Lot Size": "1 Acre",
-      "Zoning": "FAR",
-      "Property Type": "Vacant Lot",
-      "County": "Meigs County",
-      "Status": "Active"
-    }
+    details: { "Asking Price": "Taking Offers", "Estimated ARV": "$300,000", "Lot Size": "1 Acre", "Zoning": "FAR", "Property Type": "Vacant Lot", "County": "Meigs County", "Status": "Active" }
   },
   {
     id: 2,
-    address: "2 Abelia Ln",
-    city: "Chattanooga, TN 37415",
-    badge: "probate",
-    badgeLabel: "Probate Pending",
-    strategy: "flip",
-    strategyLabel: "New Build",
-    askingPrice: "Taking Offers",
-    arv: "$320,000",
-    repairEst: "N/A",
-    beds: null, baths: null, sqft: null,
-    type: "Condemned / Tear Down",
+    address: "2 Abelia Ln", city: "Chattanooga, TN 37415",
+    badge: "probate", badgeLabel: "Probate Pending",
+    strategy: "flip", strategyLabel: "New Build",
+    askingPrice: "Taking Offers", arv: "$320,000", repairEst: "N/A",
+    beds: null, baths: null, sqft: null, type: "Condemned / Tear Down",
     majors: [],
     description: "Condemned single family property following a house fire in early 2026. Built in 1955. Probate is in process to facilitate a clean deed transfer. Suitable for tear down and new construction.",
-    details: {
-      "Asking Price": "Taking Offers",
-      "Estimated ARV": "$320,000",
-      "Property Type": "Condemned / Tear Down",
-      "Year Built": "1955",
-      "Strategy": "New Build",
-      "County": "Hamilton County",
-      "Status": "Probate Pending"
-    }
+    details: { "Asking Price": "Taking Offers", "Estimated ARV": "$320,000", "Property Type": "Condemned / Tear Down", "Year Built": "1955", "Strategy": "New Build", "County": "Hamilton County", "Status": "Probate Pending" }
   },
   {
     id: 3,
-    address: "805 Hyatte Rd",
-    city: "Soddy Daisy, TN 37379",
-    badge: "clearing",
-    badgeLabel: "Clearing Title",
-    strategy: "flip",
-    strategyLabel: "New Build",
-    askingPrice: "Taking Offers",
-    arv: "TBD",
-    repairEst: "N/A",
-    beds: null, baths: null, sqft: ".26 Acres",
-    type: "Undeveloped Lot",
+    address: "805 Hyatte Rd", city: "Soddy Daisy, TN 37379",
+    badge: "clearing", badgeLabel: "Clearing Title",
+    strategy: "flip", strategyLabel: "New Build",
+    askingPrice: "Taking Offers", arv: "TBD", repairEst: "N/A",
+    beds: null, baths: null, sqft: ".26 Acres", type: "Undeveloped Lot",
     majors: [],
     description: "Undeveloped .26 acre lot zoned Agricultural in Soddy Daisy, Tennessee. Title is currently being cleared — estimated clean by June.",
-    details: {
-      "Asking Price": "Taking Offers",
-      "Estimated ARV": "TBD",
-      "Lot Size": ".26 Acres",
-      "Zoning": "Agricultural",
-      "Property Type": "Undeveloped Lot",
-      "County": "Hamilton County",
-      "Title Status": "Clearing — Est. June",
-      "Status": "Clearing Title"
-    }
-  },
+    details: { "Asking Price": "Taking Offers", "Estimated ARV": "TBD", "Lot Size": ".26 Acres", "Zoning": "Agricultural", "Property Type": "Undeveloped Lot", "County": "Hamilton County", "Title Status": "Clearing — Est. June", "Status": "Clearing Title" }
+  }
 ];
+
+let DEALS = [];
+
+// Map Airtable record to deal object
+function mapRecord(rec, index) {
+  const f = rec.fields;
+  const majorsRaw = f['Majors'] || '';
+  const majors = majorsRaw ? majorsRaw.split(',').map(m => m.trim()).filter(Boolean) : [];
+  const photos = f['Photos'] ? f['Photos'].map(p => p.url) : [];
+
+  // Build details object from non-empty fields
+  const details = {};
+  if (f['Asking Price']) details['Asking Price'] = f['Asking Price'];
+  if (f['ARV'])          details['Estimated ARV'] = f['ARV'];
+  if (f['Repair Est'])   details['Repair Estimate'] = f['Repair Est'];
+  if (f['Type'])         details['Property Type'] = f['Type'];
+  if (f['Beds'])         details['Beds'] = f['Beds'];
+  if (f['Baths'])        details['Baths'] = f['Baths'];
+  if (f['Sqft'])         details['Sq Ft'] = f['Sqft'];
+  if (f['Strategy'])     details['Strategy'] = f['Strategy'];
+
+  return {
+    id: index + 1,
+    address:      f['Address']      || '',
+    city:         f['City']         || '',
+    badge:        f['Badge']        || 'active',
+    badgeLabel:   f['Badge Label']  || 'Active',
+    strategy:     (f['Strategy']    || 'other').toLowerCase().replace(/[^a-z]/g,''),
+    strategyLabel: f['Strategy']    || '',
+    askingPrice:  f['Asking Price'] || 'Contact Us',
+    arv:          f['ARV']          || '',
+    repairEst:    f['Repair Est']   || '',
+    beds:         f['Beds']         || null,
+    baths:        f['Baths']        || null,
+    sqft:         f['Sqft']         || null,
+    type:         f['Type']         || '',
+    majors,
+    photos,
+    description:  f['Description']  || '',
+    details
+  };
+}
+
+// Fetch from secure Netlify proxy
+async function fetchDeals() {
+  try {
+    const res = await fetch('/.netlify/functions/deals');
+    if (!res.ok) throw new Error('Fetch failed');
+    const data = await res.json();
+    DEALS = data.records
+      .filter(r => r.fields['Active'])
+      .map((r, i) => mapRecord(r, i));
+    if (DEALS.length === 0) DEALS = FALLBACK_DEALS;
+  } catch (e) {
+    console.warn('Using fallback deals:', e);
+    DEALS = FALLBACK_DEALS;
+  }
+}
+
+
 
 function renderDeals(filter) {
   const grid = document.getElementById('deals-grid');
   const filtered = filter === 'all' ? DEALS : DEALS.filter(d => d.strategy === filter);
-  grid.innerHTML = filtered.map(d => `
-    <div class="deal-card" data-id="${d.id}" data-strategy="${d.strategy}">
+  grid.innerHTML = filtered.map(d => {
+
+    // Helper: is a value empty/null/TBD?
+    const isEmpty = v => !v || v === '' || v === null || v === undefined;
+    const isNA = v => isEmpty(v) || v === 'N/A' || v === 'TBD' || v === '—';
+
+    // Row 1: Beds/Baths OR Property Type | Sq Ft (if present) | Ask Price
+    const col1Val = d.beds !== null && d.beds !== undefined ? `${d.beds}bd / ${d.baths}ba` : (d.type || '—');
+    const col1Key = d.beds !== null && d.beds !== undefined ? 'Beds / Baths' : 'Type';
+    const col2 = !isEmpty(d.sqft) ? `<div class="metric"><span class="metric-val">${d.sqft}</span><div class="metric-key">Sq Ft</div></div>` : '';
+    const askStyle = !isEmpty(d.askingPrice) && !d.askingPrice.startsWith('$') ? 'font-size:11px;color:#ffcf70;font-style:italic;' : '';
+
+    // Row 2: ARV | Repair Est (if not N/A) | Majors
+    const arvCol = !isEmpty(d.arv) ? `<div class="metric"><span class="metric-val">${d.arv}</span><div class="metric-key">ARV</div></div>` : '';
+    const repairCol = !isNA(d.repairEst) ? `<div class="metric"><span class="metric-val">${d.repairEst}</span><div class="metric-key">Repair Est.</div></div>` : '';
+    const majorsCol = d.majors !== null && d.majors !== undefined
+      ? `<div class="metric" style="display:flex;align-items:center;justify-content:center;">
+          ${d.majors.length > 0
+            ? `<span style="font-size:11px;color:#ffcf70;text-align:center;line-height:1.4;">⚠️ Needs:<br>${d.majors.join(', ')}</span>`
+            : `<span style="font-size:11px;color:rgba(100,220,130,0.9);text-align:center;line-height:1.4;">✅ No Major<br>Items</span>`
+          }
+        </div>` : '';
+
+    // Only show row 2 if it has content
+    const row2 = (arvCol || repairCol || majorsCol)
+      ? `<div class="deal-metrics" style="margin-top:-8px;">${arvCol}${repairCol}${majorsCol}</div>` : '';
+
+    // Description — truncate only if longer than 120 chars
+    const desc = !isEmpty(d.description)
+      ? `<div class="deal-description">${d.description.length > 120 ? d.description.substring(0, 120) + '...' : d.description}</div>` : '';
+
+    // Badge — only show if present
+    const badge = !isEmpty(d.badge) ? `<div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>` : '';
+    const stratLabel = !isEmpty(d.strategyLabel) ? `<div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>` : '';
+
+    return `
+    <div class="deal-card" data-id="${d.id}" data-strategy="${d.strategy || 'other'}">
       <div class="deal-img-placeholder">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
-        <div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>
-        <div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>
+        ${badge}${stratLabel}
       </div>
       <div class="deal-body">
         <div class="deal-address">${d.address}</div>
         <div class="deal-location">${d.city}</div>
         <div class="deal-metrics">
-          <div class="metric"><span class="metric-val">${d.beds !== null ? `${d.beds}bd / ${d.baths}ba` : d.type}</span><div class="metric-key">${d.beds !== null ? 'Beds / Baths' : 'Type'}</div></div>
-          <div class="metric"><span class="metric-val">${d.sqft !== null ? d.sqft : '—'}</span><div class="metric-key">Sq Ft</div></div>
-          <div class="metric"><span class="metric-val" style="${!d.askingPrice.startsWith('$') ? 'font-size:11px;color:#ffcf70;font-style:italic;' : ''}">${d.askingPrice}</span><div class="metric-key">Ask Price</div></div>
+          <div class="metric"><span class="metric-val">${col1Val}</span><div class="metric-key">${col1Key}</div></div>
+          ${col2}
+          <div class="metric"><span class="metric-val" style="${askStyle}">${d.askingPrice || 'Contact Us'}</span><div class="metric-key">Ask Price</div></div>
         </div>
-        <div class="deal-metrics" style="margin-top:-8px;">
-          <div class="metric"><span class="metric-val">${d.arv}</span><div class="metric-key">ARV</div></div>
-          <div class="metric"><span class="metric-val" style="${d.repairEst === 'N/A' || d.repairEst === 'TBD' ? 'font-size:12px;color:var(--muted);' : ''}">${d.repairEst}</span><div class="metric-key">Repair Est.</div></div>
-          <div class="metric" style="display:flex;align-items:center;justify-content:center;">
-            ${d.majors && d.majors.length > 0
-              ? `<span style="font-size:11px;color:#ffcf70;text-align:center;line-height:1.4;">⚠️ Needs:<br>${d.majors.join(', ')}</span>`
-              : `<span style="font-size:11px;color:rgba(100,220,130,0.9);text-align:center;line-height:1.4;">✅ No Major<br>Items</span>`
-            }
-          </div>
-        </div>
-        <div class="deal-description">${d.description.substring(0, 120)}...</div>
+        ${row2}
+        ${desc}
         <div class="deal-footer">
           <button class="deal-btn-primary" onclick="openModal(${d.id})">View Deal Sheet</button>
           <button class="deal-btn-outline" onclick="shareDeal(${d.id}, '${d.address}')">Share</button>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function filterDeals(type, btn) {
@@ -901,31 +962,41 @@ function filterDeals(type, btn) {
 function openModal(id) {
   const d = DEALS.find(x => x.id === id);
   if (!d) return;
-  const rows = Object.entries(d.details).map(([k,v]) =>
-    `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`
-  ).join('');
+  const isEmpty = v => !v || v === '' || v === null || v === undefined;
+
+  // Only render detail rows that have values
+  const rows = Object.entries(d.details || {})
+    .filter(([k, v]) => !isEmpty(v))
+    .map(([k, v]) => `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`)
+    .join('');
+
+  const askStyle = !isEmpty(d.askingPrice) && !d.askingPrice.startsWith('$') ? 'font-size:13px;color:#ffcf70;font-style:italic;' : '';
+  const arvMetric = !isEmpty(d.arv) ? `<div class="modal-metric"><span class="modal-metric-val">${d.arv}</span><div class="modal-metric-key">Est. ARV</div></div>` : '';
+  const repairMetric = !isEmpty(d.repairEst) && d.repairEst !== 'N/A' ? `<div class="modal-metric"><span class="modal-metric-val">${d.repairEst}</span><div class="modal-metric-key">Repair Est.</div></div>` : '';
+
+  const majorsBlock = d.majors !== null && d.majors !== undefined
+    ? d.majors.length > 0
+      ? `<div style="background:rgba(255,200,80,0.07);border:1px solid rgba(255,200,80,0.18);border-radius:6px;padding:12px 16px;margin-bottom:20px;">
+          <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,200,80,0.7);">⚠️ Needs: </span>
+          <span style="font-size:13px;color:#ffcf70;">${d.majors.join(' · ')}</span>
+        </div>`
+      : `<div style="background:rgba(100,220,130,0.06);border:1px solid rgba(100,220,130,0.15);border-radius:6px;padding:12px 16px;margin-bottom:20px;">
+          <span style="font-size:13px;color:rgba(100,220,130,0.9);">✅ No major items identified</span>
+        </div>`
+    : '';
+
   document.getElementById('modal-content').innerHTML = `
     <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">&#x2715;</button>
     <div class="modal-address">${d.address}</div>
-    <div class="modal-location">${d.city} &nbsp;·&nbsp; ${d.strategyLabel} &nbsp;·&nbsp; ${d.type}</div>
+    <div class="modal-location">${d.city}${d.strategyLabel ? ` &nbsp;·&nbsp; ${d.strategyLabel}` : ''}${d.type ? ` &nbsp;·&nbsp; ${d.type}` : ''}</div>
     <div class="modal-metrics">
-      <div class="modal-metric"><span class="modal-metric-val" style="${!d.askingPrice.startsWith('$') ? 'font-size:13px;color:#ffcf70;font-style:italic;' : ''}">${d.askingPrice}</span><div class="modal-metric-key">Asking Price</div></div>
-      <div class="modal-metric"><span class="modal-metric-val">${d.arv}</span><div class="modal-metric-key">Est. ARV</div></div>
-      <div class="modal-metric"><span class="modal-metric-val">${d.repairEst}</span><div class="modal-metric-key">Repair Est.</div></div>
+      <div class="modal-metric"><span class="modal-metric-val" style="${askStyle}">${d.askingPrice || 'Contact Us'}</span><div class="modal-metric-key">Asking Price</div></div>
+      ${arvMetric}
+      ${repairMetric}
     </div>
-    ${d.majors && d.majors.length > 0 ? `
-    <div style="background:rgba(255,200,80,0.07);border:1px solid rgba(255,200,80,0.18);border-radius:6px;padding:12px 16px;margin-bottom:20px;">
-      <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,200,80,0.7);">⚠️ Needs: </span>
-      <span style="font-size:13px;color:#ffcf70;">${d.majors.join(' · ')}</span>
-    </div>` : `
-    <div style="background:rgba(100,220,130,0.06);border:1px solid rgba(100,220,130,0.15);border-radius:6px;padding:12px 16px;margin-bottom:20px;">
-      <span style="font-size:13px;color:rgba(100,220,130,0.9);">✅ No major items identified</span>
-    </div>`}
-    <div class="modal-desc">${d.description}</div>
-    <div class="modal-details">
-      <h4>Deal Details</h4>
-      ${rows}
-    </div>
+    ${majorsBlock}
+    ${!isEmpty(d.description) ? `<div class="modal-desc">${d.description}</div>` : ''}
+    ${rows ? `<div class="modal-details"><h4>Deal Details</h4>${rows}</div>` : ''}
     <div class="modal-actions">
       <a href="mailto:deals@chattquisitions.com?subject=Interest: ${encodeURIComponent(d.address)}" class="modal-btn-primary">Email About This Deal</a>
       <a href="tel:+14235550100" class="modal-btn-outline">Call Now</a>
@@ -1090,7 +1161,8 @@ function animateStat(el, target, prefix, suffix, duration) {
   requestAnimationFrame(step);
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+  await fetchDeals();
   renderDeals('all');
   checkDealRoute();
 
@@ -1098,11 +1170,11 @@ window.addEventListener('load', () => {
   const totalDeals = DEALS.length;
   const totalArv = Math.round(
     DEALS.reduce((sum, d) => {
-      const val = parseFloat(d.arv.replace(/[^0-9.]/g, ''));
+      const val = parseFloat((d.arv || '').replace(/[^0-9.]/g, ''));
       return sum + (isNaN(val) ? 0 : val);
     }, 0) / 1000
   );
-  const COUNTIES_ACTIVE = 3; // Update this number manually as you expand
+  const COUNTIES_ACTIVE = 3;
 
   setTimeout(() => {
     animateStat(document.getElementById('stat-deals'), String(totalDeals), '', '', 900);
