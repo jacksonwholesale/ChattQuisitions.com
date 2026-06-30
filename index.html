@@ -391,8 +391,57 @@
     cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
+    z-index: 3;
   }
   .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+  /* PHOTO GALLERY */
+  .modal-gallery {
+    position: relative;
+    width: calc(100% + 72px);
+    margin: -36px -36px 24px -36px;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    background: var(--bg3);
+    border-radius: 14px 14px 0 0;
+  }
+  .modal-gallery-track {
+    display: flex; height: 100%;
+    transition: transform 0.35s ease;
+  }
+  .modal-gallery-slide {
+    min-width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    flex-shrink: 0;
+  }
+  .gallery-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.5); border: none; color: #fff;
+    width: 36px; height: 36px; border-radius: 50%;
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    z-index: 2;
+  }
+  .gallery-arrow:hover { background: rgba(0,0,0,0.75); }
+  .gallery-arrow-left { left: 12px; }
+  .gallery-arrow-right { right: 12px; }
+  .gallery-dots {
+    position: absolute; bottom: 12px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 6px;
+    z-index: 2;
+  }
+  .gallery-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer; transition: background 0.2s, transform 0.2s;
+  }
+  .gallery-dot.active { background: #fff; transform: scale(1.3); }
+
+  @media (max-width: 768px) {
+    .modal-gallery { width: calc(100% + 48px); margin: -24px -24px 20px -24px; border-radius: 0; }
+  }
+
   .modal-address {
     font-family: 'Playfair Display', serif;
     font-size: 26px; font-weight: 700; margin-bottom: 6px;
@@ -810,6 +859,7 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "$300,000", repairEst: "TBD",
     beds: null, baths: null, sqft: "1 Acre", type: "Vacant Lot",
     majors: [],
+    photos: [],
     description: "Vacant acre lot zoned FAR in a residential area of Meigs County, Tennessee. Walking distance from the lake. Buildable and ready for new construction.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "$300,000", "Lot Size": "1 Acre", "Zoning": "FAR", "Property Type": "Vacant Lot", "County": "Meigs County", "Status": "Active" }
   },
@@ -821,6 +871,7 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "$320,000", repairEst: "N/A",
     beds: null, baths: null, sqft: null, type: "Condemned / Tear Down",
     majors: [],
+    photos: [],
     description: "Condemned single family property following a house fire in early 2026. Built in 1955. Probate is in process to facilitate a clean deed transfer. Suitable for tear down and new construction.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "$320,000", "Property Type": "Condemned / Tear Down", "Year Built": "1955", "Strategy": "New Build", "County": "Hamilton County", "Status": "Probate Pending" }
   },
@@ -832,6 +883,7 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "TBD", repairEst: "N/A",
     beds: null, baths: null, sqft: ".26 Acres", type: "Undeveloped Lot",
     majors: [],
+    photos: [],
     description: "Undeveloped .26 acre lot zoned Agricultural in Soddy Daisy, Tennessee. Title is currently being cleared — estimated clean by June.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "TBD", "Lot Size": ".26 Acres", "Zoning": "Agricultural", "Property Type": "Undeveloped Lot", "County": "Hamilton County", "Title Status": "Clearing — Est. June", "Status": "Clearing Title" }
   }
@@ -935,14 +987,22 @@ function renderDeals(filter) {
     const badge = !isEmpty(d.badge) ? `<div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>` : '';
     const stratLabel = !isEmpty(d.strategyLabel) ? `<div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>` : '';
 
+    const hasPhotos = d.photos && d.photos.length > 0;
+    const imgBlock = hasPhotos
+      ? `<div class="deal-img-placeholder" style="background-image:url('${d.photos[0]}');background-size:cover;background-position:center;">
+          ${badge}${stratLabel}
+          ${d.photos.length > 1 ? `<div style="position:absolute;bottom:12px;left:14px;font-size:10px;letter-spacing:0.05em;background:rgba(0,0,0,0.55);color:#fff;padding:3px 9px;border-radius:100px;">📷 ${d.photos.length}</div>` : ''}
+        </div>`
+      : `<div class="deal-img-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          ${badge}${stratLabel}
+        </div>`;
+
     return `
     <div class="deal-card" data-id="${d.id}" data-strategy="${d.strategy || 'other'}">
-      <div class="deal-img-placeholder">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        ${badge}${stratLabel}
-      </div>
+      ${imgBlock}
       <div class="deal-body">
         <div class="deal-address">${d.address}</div>
         <div class="deal-location">${d.city}</div>
@@ -971,6 +1031,7 @@ function filterDeals(type, btn) {
 function openModal(id) {
   const d = DEALS.find(x => x.id === id);
   if (!d) return;
+  galleryIndex = 0;
   const isEmpty = v => !v || v === '' || v === null || v === undefined;
 
   // Only render detail rows that have values
@@ -994,8 +1055,21 @@ function openModal(id) {
         </div>`
     : '';
 
+  const galleryBlock = (d.photos && d.photos.length > 0) ? `
+    <div class="modal-gallery" id="modal-gallery">
+      <div class="modal-gallery-track" id="modal-gallery-track">
+        ${d.photos.map(url => `<div class="modal-gallery-slide" style="background-image:url('${url}')"></div>`).join('')}
+      </div>
+      ${d.photos.length > 1 ? `
+        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">&#8249;</button>
+        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">&#8250;</button>
+        <div class="gallery-dots">${d.photos.map((_, i) => `<span class="gallery-dot${i === 0 ? ' active' : ''}" onclick="galleryGoTo(${i})"></span>`).join('')}</div>
+      ` : ''}
+    </div>` : '';
+
   document.getElementById('modal-content').innerHTML = `
     <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">&#x2715;</button>
+    ${galleryBlock}
     <div class="modal-address">${d.address}</div>
     <div class="modal-location">${d.city}${d.strategyLabel ? ` &nbsp;·&nbsp; ${d.strategyLabel}` : ''}${d.type ? ` &nbsp;·&nbsp; ${d.type}` : ''}</div>
     <div class="modal-metrics">
@@ -1012,6 +1086,23 @@ function openModal(id) {
     </div>
   `;
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+// Gallery navigation
+let galleryIndex = 0;
+function galleryNav(dir) {
+  const track = document.getElementById('modal-gallery-track');
+  if (!track) return;
+  const slides = track.children.length;
+  galleryIndex = (galleryIndex + dir + slides) % slides;
+  track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+  document.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === galleryIndex));
+}
+function galleryGoTo(i) {
+  galleryIndex = i;
+  const track = document.getElementById('modal-gallery-track');
+  if (track) track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+  document.querySelectorAll('.gallery-dot').forEach((d, idx) => d.classList.toggle('active', idx === galleryIndex));
 }
 
 function closeModal(e) {
@@ -1101,15 +1192,23 @@ function showDealFocus(id) {
   document.querySelector('meta[name="twitter:description"]').setAttribute('content', `${d.type} · ${d.city} · Ask: ${d.askingPrice} · ARV: ${d.arv}`);
   document.getElementById('main-content').classList.add('hidden');
   document.getElementById('deal-focus-page').classList.add('active');
-  document.getElementById('deal-focus-card').innerHTML = `
-    <div class="deal-card" style="cursor:default;transform:none;">
-      <div class="deal-img-placeholder">
+  const focusHasPhotos = d.photos && d.photos.length > 0;
+  const focusImgBlock = focusHasPhotos
+    ? `<div class="deal-img-placeholder" style="background-image:url('${d.photos[0]}');background-size:cover;background-position:center;">
+        <div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>
+        <div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>
+        ${d.photos.length > 1 ? `<div style="position:absolute;bottom:12px;left:14px;font-size:10px;letter-spacing:0.05em;background:rgba(0,0,0,0.55);color:#fff;padding:3px 9px;border-radius:100px;">📷 ${d.photos.length}</div>` : ''}
+      </div>`
+    : `<div class="deal-img-placeholder">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
         <div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>
         <div style="position:absolute;bottom:12px;right:14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);">${d.strategyLabel}</div>
-      </div>
+      </div>`;
+  document.getElementById('deal-focus-card').innerHTML = `
+    <div class="deal-card" style="cursor:default;transform:none;">
+      ${focusImgBlock}
       <div class="deal-body">
         <div class="deal-address">${d.address}</div>
         <div class="deal-location">${d.city}</div>
