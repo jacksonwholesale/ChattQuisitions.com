@@ -392,6 +392,7 @@
     cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
+    z-index: 3;
   }
   .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
@@ -738,13 +739,13 @@
       <div class="form-group form-row-full" style="margin-bottom:12px;">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
           <input type="checkbox" name="sms_transactional_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
-          <span>I consent to receive transactional/informational SMS messages from ChattQuisitions regarding my specific inquiry or submitted buy box (e.g. deal follow-ups, status updates). Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time.</span>
+          <span>I consent to receive transactional/informational SMS messages from ChattQuisitions regarding my specific inquiry or submitted buy box (e.g. deal follow-ups, status updates). Message frequency varies. Message & data rates may apply. Reply STOP to opt out at any time.</span>
         </label>
       </div>
       <div class="form-group form-row-full" style="margin-bottom:16px;">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
           <input type="checkbox" name="sms_marketing_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
-          <span>I consent to receive promotional/marketing SMS messages from ChattQuisitions about new off-market deals and investment opportunities. Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out at any time.</span>
+          <span>I consent to receive promotional/marketing SMS messages from ChattQuisitions about new off-market deals and investment opportunities. Message frequency varies. Message & data rates may apply. Reply STOP to opt out at any time.</span>
         </label>
       </div>
       <div class="form-group form-row-full" style="margin-bottom:16px;">
@@ -780,7 +781,7 @@
       <div class="section-label">Beyond The Deal</div>
       <div class="section-title">People Before Profit</div>
     </div>
-    <p style="color:var(--muted);font-size:15px;max-width:620px;margin-top:14px;line-height:1.7;">Not every deal is about the numbers. Some homeowners just need a real solution — avoiding foreclosure, navigating probate, or simply someone who'll listen and act with integrity. These are properties we've stepped in to help with creatively, often with no return for years to come. We believe doing right by people is worth it, every time.</p>
+    <p style="color:var(--muted);font-size:15px;max-width:620px;margin-top:14px;line-height:1.7;">Not every deal is about the numbers. Some homeowners just need a real solution — avoiding foreclosure, navigating probate, or simply having someone who'll listen without greed and prioritize their needs. These are properties we've stepped in with the mindset of helping first before seeing any return for years to come. We believe doing right by people is worth it, every time.</p>
   </div>
   <div class="deals-grid" id="pbp-grid"></div>
 </section>
@@ -1022,8 +1023,8 @@ function openPBPModal(id) {
         ${d.photos.map(url => `<div class="modal-gallery-slide" style="background-image:url('${url}')"></div>`).join('')}
       </div>
       ${d.photos.length > 1 ? `
-        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">&#8249;</button>
-        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">&#8250;</button>
+        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">‹</button>
+        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">›</button>
         <div class="gallery-dots">${d.photos.map((_, i) => `<span class="gallery-dot${i === 0 ? ' active' : ''}" onclick="galleryGoTo(${i})"></span>`).join('')}</div>
       ` : ''}
     </div>` : '';
@@ -1158,8 +1159,8 @@ function openModal(id) {
         ${d.photos.map(url => `<div class="modal-gallery-slide" style="background-image:url('${url}')"></div>`).join('')}
       </div>
       ${d.photos.length > 1 ? `
-        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">&#8249;</button>
-        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">&#8250;</button>
+        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">‹</button>
+        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">›</button>
         <div class="gallery-dots">${d.photos.map((_, i) => `<span class="gallery-dot${i === 0 ? ' active' : ''}" onclick="galleryGoTo(${i})"></span>`).join('')}</div>
       ` : ''}
     </div>` : '';
