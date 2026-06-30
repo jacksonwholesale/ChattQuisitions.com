@@ -392,7 +392,6 @@
     cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
-    z-index: 3;
   }
   .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
@@ -1269,12 +1268,21 @@ zipInput.addEventListener('blur', () => {
 document.querySelector('.zip-input-wrapper').addEventListener('click', () => zipInput.focus());
 
 
-// Share deal - copies link to clipboard
+// Share deal - native share sheet on mobile, clipboard fallback on desktop
 function shareDeal(id, address) {
   const url = `${window.location.origin}${window.location.pathname}?deal=${id}`;
-  navigator.clipboard.writeText(url).then(() => {
-    showToast(`Link copied — ${address}`);
-  });
+
+  if (navigator.share) {
+    navigator.share({
+      title: address,
+      text: `Check out this off-market deal — ${address}`,
+      url: url
+    }).catch(() => {}); // user cancelled share — no error needed
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast(`Link copied — ${address}`);
+    });
+  }
 }
 
 // Show focused single deal page
