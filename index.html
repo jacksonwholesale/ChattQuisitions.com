@@ -676,13 +676,13 @@
 
 <!-- BUY BOX -->
 <section class="buybox-section" id="buybox">
-  <div style="max-width: 900px; margin: 0 auto;">
+  <div style="max-width: 1100px; margin: 0 auto; width: 100%;">
     <div class="section-label">Join Our Vetted Buyers List</div>
     <div class="section-title">What Are You Looking For?</div>
     <div class="section-sub">Tell us exactly what you're looking for and we'll match you with deals that fit before they hit the list.</div>
 
     <!-- GoliathData Form Embed -->
-    <div style="margin-bottom: 24px;">
+    <div style="margin-bottom: 24px; width: 100%;">
       <script src="https://realty.goliathdata.com/embed/loader.js" data-form-id="3b49c19e-6a76-4fb6-9b89-2d54f4bee462"></script>
       <noscript><p style="text-align:center;font-size:11px;font-family:sans-serif;color:#888;">Powered by <a href="https://goliathdata.com?ref=form" style="color:#6366f1;">Goliath Data</a></p></noscript>
     </div>
@@ -1179,7 +1179,7 @@ if (contactFormEl) {
   });
 }
 
-// Share deal - native share sheet on mobile, clipboard fallback on desktop
+// Share deal - copies link to clipboard
 function shareDeal(id, address) {
   const url = `${window.location.origin}${window.location.pathname}?deal=${id}`;
 
