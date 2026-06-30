@@ -345,7 +345,8 @@
   .metric { background: var(--bg3); padding: 12px 10px; border-radius: var(--radius); text-align: center; }
   .metric-val { font-size: 16px; font-weight: 500; display: block; line-height: 1.2; }
   .metric-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
-  .deal-description { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .deal-description { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+  .deal-description.clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; -webkit-line-clamp: 4; }
   .deal-footer { display: flex; gap: 10px; }
   .deal-btn-primary {
     flex: 1; background: #fff; color: #000;
@@ -991,7 +992,7 @@ function renderPBP() {
         </div>`;
 
     const desc = !isEmpty(d.description)
-      ? `<div class="deal-description" style="-webkit-line-clamp:4;">${d.description}</div>` : '';
+      ? `<div class="deal-description clamp">${d.description}</div>` : '';
 
     return `
     <div class="deal-card" data-id="${d.id}">
