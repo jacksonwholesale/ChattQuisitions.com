@@ -345,7 +345,7 @@
   .metric { background: var(--bg3); padding: 12px 10px; border-radius: var(--radius); text-align: center; }
   .metric-val { font-size: 16px; font-weight: 500; display: block; line-height: 1.2; }
   .metric-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
-  .deal-description { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+  .deal-description { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
   .deal-footer { display: flex; gap: 10px; }
   .deal-btn-primary {
     flex: 1; background: #fff; color: #000;
@@ -391,7 +391,6 @@
     cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
-    z-index: 3;
   }
   .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
@@ -642,6 +641,7 @@
   <a href="#" class="logo">Chatt<span>Quisitions</span></a>
   <ul>
     <li><a href="#deals">Deals</a></li>
+    <li><a href="#people-before-profit">Our Story</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <a href="#buybox" class="nav-cta">Submit Buy Box</a>
@@ -772,6 +772,18 @@
   <div class="deals-grid" id="deals-grid"></div>
 </section>
 
+<!-- PEOPLE BEFORE PROFIT -->
+<section class="deals-section" id="people-before-profit" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="deals-header" style="flex-direction:column;align-items:flex-start;">
+    <div>
+      <div class="section-label">Beyond The Deal</div>
+      <div class="section-title">People Before Profit</div>
+    </div>
+    <p style="color:var(--muted);font-size:15px;max-width:620px;margin-top:14px;line-height:1.7;">Not every deal is about the numbers. Some homeowners just need a real solution — avoiding foreclosure, navigating probate, or simply someone who'll listen and act with integrity. These are properties we've stepped in to help with creatively, often with no return for years to come. We believe doing right by people is worth it, every time.</p>
+  </div>
+  <div class="deals-grid" id="pbp-grid"></div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact-section" id="contact">
   <div class="contact-inner" style="max-width: 1000px; margin: 0 auto;">
@@ -859,7 +871,6 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "$300,000", repairEst: "TBD",
     beds: null, baths: null, sqft: "1 Acre", type: "Vacant Lot",
     majors: [],
-    photos: [],
     description: "Vacant acre lot zoned FAR in a residential area of Meigs County, Tennessee. Walking distance from the lake. Buildable and ready for new construction.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "$300,000", "Lot Size": "1 Acre", "Zoning": "FAR", "Property Type": "Vacant Lot", "County": "Meigs County", "Status": "Active" }
   },
@@ -871,7 +882,6 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "$320,000", repairEst: "N/A",
     beds: null, baths: null, sqft: null, type: "Condemned / Tear Down",
     majors: [],
-    photos: [],
     description: "Condemned single family property following a house fire in early 2026. Built in 1955. Probate is in process to facilitate a clean deed transfer. Suitable for tear down and new construction.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "$320,000", "Property Type": "Condemned / Tear Down", "Year Built": "1955", "Strategy": "New Build", "County": "Hamilton County", "Status": "Probate Pending" }
   },
@@ -883,13 +893,13 @@ const FALLBACK_DEALS = [
     askingPrice: "Taking Offers", arv: "TBD", repairEst: "N/A",
     beds: null, baths: null, sqft: ".26 Acres", type: "Undeveloped Lot",
     majors: [],
-    photos: [],
     description: "Undeveloped .26 acre lot zoned Agricultural in Soddy Daisy, Tennessee. Title is currently being cleared — estimated clean by June.",
     details: { "Asking Price": "Taking Offers", "Estimated ARV": "TBD", "Lot Size": ".26 Acres", "Zoning": "Agricultural", "Property Type": "Undeveloped Lot", "County": "Hamilton County", "Title Status": "Clearing — Est. June", "Status": "Clearing Title" }
   }
 ];
 
 let DEALS = [];
+let PBP_DEALS = [];
 
 // Map Airtable record to deal object
 function mapRecord(rec, index) {
@@ -911,6 +921,7 @@ function mapRecord(rec, index) {
 
   return {
     id: index + 1,
+    category:     f['Category']     || 'Deal',
     address:      f['Address']      || '',
     city:         f['City']         || '',
     badge:        f['Badge']        || 'active',
@@ -937,17 +948,102 @@ async function fetchDeals() {
     const res = await fetch('/.netlify/functions/deals');
     if (!res.ok) throw new Error('Fetch failed');
     const data = await res.json();
-    DEALS = data.records
+    const allRecords = data.records
       .filter(r => r.fields['Active'])
       .map((r, i) => mapRecord(r, i));
+
+    DEALS = allRecords.filter(d => d.category !== 'Option Contract');
+    PBP_DEALS = allRecords.filter(d => d.category === 'Option Contract');
+
     if (DEALS.length === 0) DEALS = FALLBACK_DEALS;
   } catch (e) {
     console.warn('Using fallback deals:', e);
     DEALS = FALLBACK_DEALS;
+    PBP_DEALS = [];
   }
 }
 
+// Render People Before Profit cards — simplified, story-focused
+function renderPBP() {
+  const grid = document.getElementById('pbp-grid');
+  if (!grid) return;
 
+  if (PBP_DEALS.length === 0) {
+    grid.parentElement.style.display = 'none';
+    return;
+  }
+  grid.parentElement.style.display = '';
+
+  grid.innerHTML = PBP_DEALS.map(d => {
+    const isEmpty = v => !v || v === '' || v === null || v === undefined;
+    const hasPhotos = d.photos && d.photos.length > 0;
+    const badge = !isEmpty(d.badge) && !isEmpty(d.badgeLabel) ? `<div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>` : '';
+
+    const imgBlock = hasPhotos
+      ? `<div class="deal-img-placeholder" style="aspect-ratio:4/3;background-image:url('${d.photos[0]}');background-size:cover;background-position:center;">
+          ${badge}
+        </div>`
+      : `<div class="deal-img-placeholder" style="aspect-ratio:4/3;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          ${badge}
+        </div>`;
+
+    const desc = !isEmpty(d.description)
+      ? `<div class="deal-description" style="-webkit-line-clamp:4;">${d.description}</div>` : '';
+
+    return `
+    <div class="deal-card" data-id="${d.id}">
+      ${imgBlock}
+      <div class="deal-body">
+        <div class="deal-address">${d.address}</div>
+        <div class="deal-location">${d.city}</div>
+        ${desc}
+        <div class="deal-footer">
+          <button class="deal-btn-primary" onclick="openPBPModal(${d.id})">Read Full Story</button>
+        </div>
+      </div>
+    </div>
+  `}).join('');
+}
+
+// Open a simplified story modal for PBP entries
+function openPBPModal(id) {
+  const d = PBP_DEALS.find(x => x.id === id);
+  if (!d) return;
+  galleryIndex = 0;
+  const isEmpty = v => !v || v === '' || v === null || v === undefined;
+
+  const galleryBlock = (d.photos && d.photos.length > 0) ? `
+    <div class="modal-gallery" id="modal-gallery">
+      <div class="modal-gallery-track" id="modal-gallery-track">
+        ${d.photos.map(url => `<div class="modal-gallery-slide" style="background-image:url('${url}')"></div>`).join('')}
+      </div>
+      ${d.photos.length > 1 ? `
+        <button class="gallery-arrow gallery-arrow-left" onclick="galleryNav(-1)">&#8249;</button>
+        <button class="gallery-arrow gallery-arrow-right" onclick="galleryNav(1)">&#8250;</button>
+        <div class="gallery-dots">${d.photos.map((_, i) => `<span class="gallery-dot${i === 0 ? ' active' : ''}" onclick="galleryGoTo(${i})"></span>`).join('')}</div>
+      ` : ''}
+    </div>` : '';
+
+  const badgeBlock = !isEmpty(d.badge) && !isEmpty(d.badgeLabel)
+    ? `<div class="deal-badge badge-${d.badge}" style="position:static;display:inline-block;margin-bottom:16px;">${d.badgeLabel}</div>` : '';
+
+  document.getElementById('modal-content').innerHTML = `
+    <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">&#x2715;</button>
+    ${galleryBlock}
+    ${badgeBlock}
+    <div class="modal-address">${d.address}</div>
+    <div class="modal-location">${d.city}</div>
+    ${!isEmpty(d.description) ? `<div class="modal-desc" style="margin-top:20px;">${d.description}</div>` : ''}
+    <div class="modal-actions">
+      <a href="mailto:jacksonfwood25@gmail.com?subject=About: ${encodeURIComponent(d.address)}" class="modal-btn-primary">Ask About This Story</a>
+      <a href="tel:+14238746736" class="modal-btn-outline">Call Now</a>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
 
 function renderDeals(filter) {
   const grid = document.getElementById('deals-grid');
@@ -1272,6 +1368,7 @@ function animateStat(el, target, prefix, suffix, duration) {
 window.addEventListener('load', async () => {
   await fetchDeals();
   renderDeals('all');
+  renderPBP();
   checkDealRoute();
 
   // Auto-calculate stats from DEALS data
