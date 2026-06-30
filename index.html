@@ -680,79 +680,25 @@
     <div class="section-label">Join Our Vetted Buyers List</div>
     <div class="section-title">What Are You Looking For?</div>
     <div class="section-sub">Tell us exactly what you're looking for and we'll match you with deals that fit before they hit the list.</div>
-    <form id="buybox-form">
-      <div class="buybox-grid">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" placeholder="Jane Smith" required />
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="jane@company.com" required />
-        </div>
-        <div class="form-group">
-          <label>Phone</label>
-          <input type="tel" placeholder="(423) 874-6736" />
-        </div>
-        <div class="form-group form-row-full">
-          <label>Investment Strategy</label>
-          <div class="prop-type-grid">
-            <label class="prop-type-option"><input type="checkbox" value="Fix & Flip" /><span>Fix &amp; Flip</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Buy & Hold / Rental" /><span>Buy &amp; Hold / Rental</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Wholesale" /><span>Wholesale</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="BRRRR" /><span>BRRRR</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="New Construction" /><span>New Construction</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Other" /><span>Other</span></label>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>What's Your Max? (Budget)</label>
-          <input type="text" placeholder="e.g. $180,000" />
-        </div>
 
-        <div class="form-group form-row-full">
-          <label>Preferred Areas / Zip Codes / County</label>
-          <div class="zip-input-wrapper">
-            <div class="zip-tags" id="zip-tags"></div>
-            <input type="text" id="zip-input" placeholder="Type a zip or area and press Enter" autocomplete="off" />
-          </div>
-          <input type="hidden" id="zip-hidden" name="zip_codes" />
-          <p style="font-size:11px;color:var(--muted);margin-top:6px;">Press Enter or comma to add each zip code / area</p>
-        </div>
-        <div class="form-group form-row-full">
-          <label>Property Types</label>
-          <div class="prop-type-grid">
-            <label class="prop-type-option"><input type="checkbox" value="Single Family" /><span>Single Family</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Multi-Family (2–4 units)" /><span>Multi-Family (2–4 units)</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Small Multifamily (5+)" /><span>Small Multifamily (5+)</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Commercial" /><span>Commercial</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Land / Lots" /><span>Land / Lots</span></label>
-            <label class="prop-type-option"><input type="checkbox" value="Any" /><span>Any</span></label>
-          </div>
-        </div>
-        <div class="form-group form-row-full">
-          <label>Additional Notes / Criteria</label>
-          <textarea placeholder="Min beds/baths, deal timeline, financing type, anything else..."></textarea>
-        </div>
-      </div>
-      <div class="form-group form-row-full" style="margin-bottom:12px;">
-        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
-          <input type="checkbox" name="sms_transactional_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
-          <span>I consent to receive transactional/informational SMS messages from ChattQuisitions regarding my specific inquiry or submitted buy box (e.g. deal follow-ups, status updates). Message frequency varies. Message & data rates may apply. Reply STOP to opt out at any time.</span>
-        </label>
-      </div>
-      <div class="form-group form-row-full" style="margin-bottom:16px;">
-        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-transform:none;letter-spacing:normal;font-size:12px;color:var(--muted);line-height:1.6;">
-          <input type="checkbox" name="sms_marketing_consent" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;" />
-          <span>I consent to receive promotional/marketing SMS messages from ChattQuisitions about new off-market deals and investment opportunities. Message frequency varies. Message & data rates may apply. Reply STOP to opt out at any time.</span>
-        </label>
-      </div>
-      <div class="form-group form-row-full" style="margin-bottom:16px;">
-        <p style="font-size:11px;color:var(--muted);">Consent to receive SMS is not a condition of any purchase or service. See our <a href="/privacy" style="color:#fff;text-decoration:underline;" target="_blank">Privacy Policy</a> and <a href="/terms" style="color:#fff;text-decoration:underline;" target="_blank">Terms of Service</a>.</p>
-      </div>
-      <button type="submit" class="submit-btn">Submit &rarr;</button>
-      <p class="form-note">We review every submission and will reach out directly when a match comes in.</p>
-    </form>
+    <!-- GoliathData Form Embed -->
+    <div style="margin-bottom: 24px;">
+      <script src="https://realty.goliathdata.com/embed/loader.js" data-form-id="3b49c19e-6a76-4fb6-9b89-2d54f4bee462"></script>
+      <noscript><p style="text-align:center;font-size:11px;font-family:sans-serif;color:#888;">Powered by <a href="https://goliathdata.com?ref=form" style="color:#6366f1;">Goliath Data</a></p></noscript>
+    </div>
+
+    <!-- SMS Consent & Policy Links (required for A2P compliance) -->
+    <div style="margin-top: 16px; padding: 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;">
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:10px;">
+        By submitting this form and providing your phone number, you may consent to receive SMS messages from ChattQuisitions. Message frequency varies. Message &amp; data rates may apply. Reply <strong style="color:#fff;">STOP</strong> to opt out at any time. Reply <strong style="color:#fff;">HELP</strong> for assistance.
+      </p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.35);">
+        Consent is not a condition of any purchase or service. See our
+        <a href="/privacy" style="color:rgba(255,255,255,0.6);text-decoration:underline;" target="_blank">Privacy Policy</a>
+        and
+        <a href="/terms" style="color:rgba(255,255,255,0.6);text-decoration:underline;" target="_blank">Terms of Service</a>.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -1223,50 +1169,15 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-document.getElementById('buybox-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  showToast('Buy box submitted! We\'ll be in touch soon.');
-  this.reset();
-});
-
-document.getElementById('contact-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  showToast('Message sent! We\'ll respond within 24 hours.');
-  this.reset();
-});
-
-// Zip tag input
-const zipInput = document.getElementById('zip-input');
-const zipTags = document.getElementById('zip-tags');
-const zipHidden = document.getElementById('zip-hidden');
-let zips = [];
-
-function renderZipTags() {
-  zipTags.innerHTML = zips.map((z, i) => `
-    <div class="zip-tag">${z}<button type="button" class="zip-tag-remove" onclick="removeZip(${i})">×</button></div>
-  `).join('');
-  zipHidden.value = zips.join(', ');
-}
-
-function addZip(val) {
-  const v = val.trim().replace(/,+$/, '');
-  if (v && !zips.includes(v)) { zips.push(v); renderZipTags(); }
-}
-
-function removeZip(i) { zips.splice(i, 1); renderZipTags(); }
-
-zipInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ',') {
+// Contact form handler
+const contactFormEl = document.getElementById('contact-form');
+if (contactFormEl) {
+  contactFormEl.addEventListener('submit', function(e) {
     e.preventDefault();
-    addZip(zipInput.value);
-    zipInput.value = '';
-  }
-});
-zipInput.addEventListener('blur', () => {
-  if (zipInput.value.trim()) { addZip(zipInput.value); zipInput.value = ''; }
-});
-document.querySelector('.zip-input-wrapper').addEventListener('click', () => zipInput.focus());
-
+    showToast('Message sent! We\'ll respond within 24 hours.');
+    this.reset();
+  });
+}
 
 // Share deal - native share sheet on mobile, clipboard fallback on desktop
 function shareDeal(id, address) {
