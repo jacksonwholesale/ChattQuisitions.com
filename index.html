@@ -326,22 +326,22 @@
     font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
     padding: 4px 10px; border-radius: 100px;
     font-weight: 500;
+    /* Default fallback for any badge */
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.25);
   }
-  .badge-active { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-  .badge-hot { background: rgba(255,100,80,0.15); color: #ff9580; border: 1px solid rgba(255,100,80,0.25); }
-  .badge-pending { background: rgba(255,200,80,0.12); color: #ffcf70; border: 1px solid rgba(255,200,80,0.2); }
-  .badge-clearing { background: rgba(120,180,255,0.12); color: #90c8ff; border: 1px solid rgba(120,180,255,0.2); }
-  .badge-clearing-title { background: rgba(120,180,255,0.12); color: #90c8ff; border: 1px solid rgba(120,180,255,0.2); }
-  .badge-probate { background: rgba(200,120,255,0.12); color: #d49fff; border: 1px solid rgba(200,120,255,0.2); }
-  .badge-put-through-probate { background: rgba(200,120,255,0.12); color: #d49fff; border: 1px solid rgba(200,120,255,0.2); }
-  .badge-foreclosure-stopped { background: rgba(255,100,80,0.15); color: #ff9580; border: 1px solid rgba(255,100,80,0.25); }
-  .badge-closing-pending { background: rgba(255,200,80,0.12); color: #ffcf70; border: 1px solid rgba(255,200,80,0.2); }
-  .badge-free-and-clear { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
-  .badge-taxes-paid { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
-  .badge-life-estate { background: rgba(255,180,50,0.12); color: #ffc94d; border: 1px solid rgba(255,180,50,0.2); }
-  .badge-brought-to-life { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
-  /* Catch-all for any future badge types not explicitly defined */
-  [class^="badge-"] { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); }
+  .deal-badge.badge-active { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+  .deal-badge.badge-hot { background: rgba(255,100,80,0.15); color: #ff9580; border: 1px solid rgba(255,100,80,0.25); }
+  .deal-badge.badge-pending { background: rgba(255,200,80,0.12); color: #ffcf70; border: 1px solid rgba(255,200,80,0.2); }
+  .deal-badge.badge-clearing { background: rgba(120,180,255,0.12); color: #90c8ff; border: 1px solid rgba(120,180,255,0.2); }
+  .deal-badge.badge-clearing-title { background: rgba(120,180,255,0.12); color: #90c8ff; border: 1px solid rgba(120,180,255,0.2); }
+  .deal-badge.badge-probate { background: rgba(200,120,255,0.12); color: #d49fff; border: 1px solid rgba(200,120,255,0.2); }
+  .deal-badge.badge-put-through-probate { background: rgba(200,120,255,0.12); color: #d49fff; border: 1px solid rgba(200,120,255,0.2); }
+  .deal-badge.badge-foreclosure-stopped { background: rgba(255,100,80,0.15); color: #ff9580; border: 1px solid rgba(255,100,80,0.25); }
+  .deal-badge.badge-closing-pending { background: rgba(255,200,80,0.12); color: #ffcf70; border: 1px solid rgba(255,200,80,0.2); }
+  .deal-badge.badge-free-and-clear { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
+  .deal-badge.badge-taxes-paid { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
+  .deal-badge.badge-life-estate { background: rgba(255,180,50,0.12); color: #ffc94d; border: 1px solid rgba(255,180,50,0.2); }
+  .deal-badge.badge-brought-to-life { background: rgba(100,220,130,0.12); color: rgba(100,220,130,0.9); border: 1px solid rgba(100,220,130,0.2); }
   .deal-body { padding: 22px 24px; }
   .deal-address {
     font-family: 'Playfair Display', serif;
