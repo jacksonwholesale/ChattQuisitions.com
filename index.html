@@ -321,6 +321,54 @@
     position: relative;
   }
   .deal-img-placeholder svg { opacity: 0.15; }
+
+  /* SWIPEABLE CARD PHOTO CAROUSEL */
+  .card-carousel {
+    position: relative;
+    width: 100%; aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--bg3);
+    touch-action: pan-y;
+  }
+  .card-carousel-track {
+    display: flex; height: 100%;
+    transition: transform 0.3s ease;
+  }
+  .card-carousel-slide {
+    min-width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    flex-shrink: 0;
+    -webkit-user-drag: none;
+  }
+  .card-carousel-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.45); border: none; color: #fff;
+    width: 30px; height: 30px; border-radius: 50%;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, opacity 0.2s;
+    z-index: 3;
+    opacity: 0;
+  }
+  .card-carousel:hover .card-carousel-arrow { opacity: 1; }
+  .card-carousel-arrow:hover { background: rgba(0,0,0,0.75); }
+  .card-carousel-arrow-left { left: 10px; }
+  .card-carousel-arrow-right { right: 10px; }
+  .card-carousel-dots {
+    position: absolute; bottom: 10px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 5px;
+    z-index: 3;
+  }
+  .card-carousel-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .card-carousel-dot.active { background: #fff; transform: scale(1.3); }
+
+  @media (hover: none) {
+    .card-carousel-arrow { opacity: 1; background: rgba(0,0,0,0.35); }
+  }
   .deal-badge {
     position: absolute; top: 14px; left: 14px;
     font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -937,8 +985,16 @@ function renderPBP() {
     const badge = !isEmpty(d.badge) && !isEmpty(d.badgeLabel) ? `<div class="deal-badge badge-${d.badge}">${d.badgeLabel}</div>` : '';
 
     const imgBlock = hasPhotos
-      ? `<div class="deal-img-placeholder" style="aspect-ratio:4/3;background-image:url('${d.photos[0]}');background-size:cover;background-position:center;">
+      ? `<div class="card-carousel" data-card-id="pbp-${d.id}" style="aspect-ratio:4/3;">
+          <div class="card-carousel-track" id="track-pbp-${d.id}">
+            ${d.photos.map(url => `<div class="card-carousel-slide" style="background-image:url('${url}')"></div>`).join('')}
+          </div>
           ${badge}
+          ${d.photos.length > 1 ? `
+            <button class="card-carousel-arrow card-carousel-arrow-left" onclick="event.stopPropagation(); cardCarouselNav('pbp-${d.id}', -1, ${d.photos.length})">‹</button>
+            <button class="card-carousel-arrow card-carousel-arrow-right" onclick="event.stopPropagation(); cardCarouselNav('pbp-${d.id}', 1, ${d.photos.length})">›</button>
+            <div class="card-carousel-dots" id="dots-pbp-${d.id}">${d.photos.map((_, i) => `<span class="card-carousel-dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>
+          ` : ''}
         </div>`
       : `<div class="deal-img-placeholder" style="aspect-ratio:4/3;">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
@@ -963,6 +1019,7 @@ function renderPBP() {
       </div>
     </div>
   `}).join('');
+  initCardCarouselSwipe();
 }
 
 // Open a simplified story modal for PBP entries
@@ -1042,9 +1099,16 @@ function renderDeals(filter) {
 
     const hasPhotos = d.photos && d.photos.length > 0;
     const imgBlock = hasPhotos
-      ? `<div class="deal-img-placeholder" style="background-image:url('${d.photos[0]}');background-size:cover;background-position:center;">
+      ? `<div class="card-carousel" data-card-id="${d.id}">
+          <div class="card-carousel-track" id="track-${d.id}">
+            ${d.photos.map(url => `<div class="card-carousel-slide" style="background-image:url('${url}')"></div>`).join('')}
+          </div>
           ${badge}${stratLabel}
-          ${d.photos.length > 1 ? `<div style="position:absolute;bottom:12px;left:14px;font-size:10px;letter-spacing:0.05em;background:rgba(0,0,0,0.55);color:#fff;padding:3px 9px;border-radius:100px;">📷 ${d.photos.length}</div>` : ''}
+          ${d.photos.length > 1 ? `
+            <button class="card-carousel-arrow card-carousel-arrow-left" onclick="event.stopPropagation(); cardCarouselNav(${d.id}, -1, ${d.photos.length})">‹</button>
+            <button class="card-carousel-arrow card-carousel-arrow-right" onclick="event.stopPropagation(); cardCarouselNav(${d.id}, 1, ${d.photos.length})">›</button>
+            <div class="card-carousel-dots" id="dots-${d.id}">${d.photos.map((_, i) => `<span class="card-carousel-dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>
+          ` : ''}
         </div>`
       : `<div class="deal-img-placeholder">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
@@ -1073,6 +1137,7 @@ function renderDeals(filter) {
       </div>
     </div>
   `}).join('');
+  initCardCarouselSwipe();
 }
 
 function filterDeals(type, btn) {
@@ -1190,6 +1255,77 @@ if (contactFormEl) {
 }
 
 // Share deal - copies link to clipboard
+// Card photo carousel — track current index per card
+const cardCarouselState = {};
+
+function cardCarouselNav(id, dir, total) {
+  if (!(id in cardCarouselState)) cardCarouselState[id] = 0;
+  cardCarouselState[id] = (cardCarouselState[id] + dir + total) % total;
+  updateCardCarousel(id);
+}
+
+function updateCardCarousel(id) {
+  const track = document.getElementById(`track-${id}`);
+  const dots = document.getElementById(`dots-${id}`);
+  if (!track) return;
+  const idx = cardCarouselState[id] || 0;
+  track.style.transform = `translateX(-${idx * 100}%)`;
+  if (dots) {
+    Array.from(dots.children).forEach((dot, i) => dot.classList.toggle('active', i === idx));
+  }
+}
+
+// Touch swipe support for card carousels
+function initCardCarouselSwipe() {
+  document.querySelectorAll('.card-carousel').forEach(carousel => {
+    const id = carousel.getAttribute('data-card-id');
+    const slides = carousel.querySelectorAll('.card-carousel-slide').length;
+    if (slides <= 1) return;
+    if (carousel.dataset.swipeInit) return; // avoid double-binding
+    carousel.dataset.swipeInit = 'true';
+
+    let startX = 0, deltaX = 0, dragging = false;
+
+    carousel.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      dragging = true;
+    }, { passive: true });
+
+    carousel.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      deltaX = e.touches[0].clientX - startX;
+    }, { passive: true });
+
+    carousel.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(deltaX) > 40) {
+        cardCarouselNav(id, deltaX < 0 ? 1 : -1, slides);
+      }
+      deltaX = 0;
+    });
+
+    // Mouse drag support for desktop
+    let mouseDown = false, mouseStartX = 0, mouseDeltaX = 0;
+    carousel.addEventListener('mousedown', e => {
+      mouseDown = true; mouseStartX = e.clientX; mouseDeltaX = 0;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!mouseDown) return;
+      mouseDeltaX = e.clientX - mouseStartX;
+    });
+    window.addEventListener('mouseup', () => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      if (Math.abs(mouseDeltaX) > 40) {
+        cardCarouselNav(id, mouseDeltaX < 0 ? 1 : -1, slides);
+      }
+      mouseDeltaX = 0;
+    });
+  });
+}
+
 function shareDeal(id, address) {
   const url = `${window.location.origin}${window.location.pathname}?deal=${id}`;
 
