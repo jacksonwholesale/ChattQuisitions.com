@@ -85,8 +85,17 @@ const back = isDeal ? { href: '/#deals', label: 'All deals' } : { href: '/#peopl
     </div>
 
     <section class="wrap pp-join">
-      <p>Want deals like this before they're posted?</p>
-      <a class="btn btn-ghost" href="/#buyers-list">Join Buyers List</a>
+      {isDeal ? (
+        <>
+          <p>Want deals like this before they're posted?</p>
+          <a class="btn btn-ghost" href="/#buyers-list">Join Buyers List</a>
+        </>
+      ) : (
+        <>
+          <p>Know a homeowner in a tough spot? We'll listen.</p>
+          <a class="btn btn-ghost" href="/#contact">Get in Touch</a>
+        </>
+      )}
     </section>
   </main>
   <div class="toast" role="status" aria-live="polite"></div>

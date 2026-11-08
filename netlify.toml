@@ -15,13 +15,13 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Legacy pretty URLs for legal pages
+# Old direct links to the legal files
 [[redirects]]
-  from = "/privacy"
-  to = "/privacy.html"
-  status = 200
+  from = "/privacy.html"
+  to = "/privacy"
+  status = 301
 
 [[redirects]]
-  from = "/terms"
-  to = "/terms.html"
-  status = 200
+  from = "/terms.html"
+  to = "/terms"
+  status = 301

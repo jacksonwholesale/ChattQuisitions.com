@@ -1,0 +1,29 @@
+---
+import Base from './Base.astro';
+interface Props { title: string; updated: string }
+const { title, updated } = Astro.props;
+---
+<Base title={`${title} | ChattQuisitions`} description={`${title} for ChattQuisitions, a brand operated by Mental Pictures LLC.`}>
+  <main class="legal wrap">
+    <header>
+      <h1>{title}</h1>
+      <p class="updated">Last updated {updated}</p>
+    </header>
+    <article><slot /></article>
+  </main>
+</Base>
+
+<style>
+  .legal { padding-top: 140px; padding-bottom: var(--section); }
+  .legal header, .legal article { max-width: 720px; }
+  .legal h1 { font-size: clamp(2.6rem, 5vw, 4rem); }
+  .updated { margin-top: 12px; color: var(--ink-faint); font-size: 14px; }
+  article { margin-top: 48px; }
+  article :global(h2) { font-size: 24px; margin: 48px 0 14px; letter-spacing: -0.01em; }
+  article :global(p), article :global(li) { color: rgba(244,243,241,0.78); font-size: 16.5px; line-height: 1.75; }
+  article :global(p) { margin-bottom: 14px; }
+  article :global(ul) { margin: 14px 0 18px 20px; }
+  article :global(li) { margin-bottom: 8px; }
+  article :global(strong) { color: var(--ink); font-weight: 600; }
+  @media (max-width: 760px) { .legal { padding-top: 112px; } }
+</style>

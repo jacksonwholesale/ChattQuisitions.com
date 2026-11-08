@@ -19,6 +19,8 @@ const deals = all.filter((p) => p.kind === 'deal');
 const stories = all.filter((p) => p.kind === 'story');
 const stats = heroStats(all);
 const COUNTIES_ACTIVE = 3;
+// Paste the GoliathData contact form's ID here and the form appears under "Let's talk deals."
+const CONTACT_FORM_ID = '';
 
 // Hero prints: records with the Airtable "Hero" box checked win. Otherwise use landscape house
 // photos (stories first, they're finished homes), skipping lots and aerial maps where possible.
@@ -121,6 +123,11 @@ const strategies = [...new Map(deals.filter((d) => d.strategySlug).map((d) => [d
           <a href="mailto:jacksonfwood25@gmail.com"><span class="kicker">Email</span><strong>jacksonfwood25@gmail.com</strong></a>
         </div>
       </div>
+      {CONTACT_FORM_ID && (
+        <div class="wrap contact-form">
+          <script is:inline src="https://realty.goliathdata.com/embed/loader.js" data-form-id={CONTACT_FORM_ID}></script>
+        </div>
+      )}
     </section>
   </main>
 </Base>
@@ -242,6 +249,8 @@ const strategies = [...new Map(deals.filter((d) => d.strategySlug).map((d) => [d
   .contact-ways a { text-decoration: none; display: grid; gap: 6px; }
   .contact-ways strong { font-size: clamp(18px, 1.8vw, 24px); font-weight: 500; border-bottom: 1px solid var(--line-strong); padding-bottom: 4px; transition: border-color 160ms var(--ease-out); }
   .contact-ways a:hover strong { border-color: var(--ink); }
+  .contact-form { margin-top: 56px; max-width: 720px; }
+  .contact-form :global(iframe) { width: 100% !important; max-width: none !important; display: block; }
 </style>
 
 <script>
