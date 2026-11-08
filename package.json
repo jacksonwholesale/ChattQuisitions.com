@@ -1,0 +1,14 @@
+{
+  "name": "chattquisitions",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^8.2.12",
+    "astro": "^7.4.7"
+  }
+}

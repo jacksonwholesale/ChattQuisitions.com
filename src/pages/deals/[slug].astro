@@ -1,0 +1,11 @@
+---
+import PropertyPage from '../../components/PropertyPage.astro';
+import { getProperty } from '../../lib/deals';
+import { cacheFor } from '../../lib/cache';
+
+const p = await getProperty('deal', Astro.params.slug!);
+if (!p) return Astro.rewrite('/404');
+if (p.slug !== Astro.params.slug) return Astro.redirect(p.url, 301);
+cacheFor(Astro, 60);
+---
+<PropertyPage p={p} />
