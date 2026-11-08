@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Not found | ChattQuisitions" description="This page isn't available.">
+  <main class="wrap nf">
+    <h1>This one's off the board.</h1>
+    <p>The property may have sold or been removed. Current deals are on the Deal Board.</p>
+    <a class="btn btn-solid" href="/#deals">View Deal Board</a>
+  </main>
+</Base>
+<style>
+  .nf { min-height: 80svh; display: grid; align-content: center; gap: 22px; padding-top: 96px; }
+  .nf h1 { font-size: clamp(2.6rem, 6vw, 5rem); }
+  .nf p { color: var(--ink-soft); max-width: 44ch; }
+  .nf .btn { justify-self: start; }
+</style>

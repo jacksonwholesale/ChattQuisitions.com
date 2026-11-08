@@ -1,0 +1,271 @@
+---
+import Base from '../layouts/Base.astro';
+import DealCard from '../components/DealCard.astro';
+import { getProperties, heroStats, formatMoneyShort } from '../lib/deals';
+import { cacheFor } from '../lib/cache';
+
+const all = await getProperties();
+
+// Old share links looked like /?deal=3. Send them to the deal's permanent page.
+const legacy = Astro.url.searchParams.get('deal');
+if (legacy) {
+  const hit = all.find((p) => p.legacyIndex === Number(legacy));
+  return Astro.redirect(hit ? hit.url : '/#deals', 301);
+}
+
+cacheFor(Astro, 60);
+
+const deals = all.filter((p) => p.kind === 'deal');
+const stories = all.filter((p) => p.kind === 'story');
+const stats = heroStats(all);
+const COUNTIES_ACTIVE = 3;
+
+// Hero prints: records with the Airtable "Hero" box checked win. Otherwise use landscape house
+// photos (stories first, they're finished homes), skipping lots and aerial maps where possible.
+const flagged = all.filter((p) => p.hero && p.photos.length);
+const landscape = (p: (typeof all)[number]) => p.photos[0] && (p.photos[0].width ?? 0) > (p.photos[0].height ?? 1);
+const pool = flagged.length ? flagged : [...stories.filter(landscape), ...deals.filter(landscape), ...all];
+const prints = [...new Set(pool)].filter((p) => p.photos.length).slice(0, 3)
+  .map((p) => ({ src: p.photos[0].url, thumb: p.photos[0].thumb }));
+
+const strategies = [...new Map(deals.filter((d) => d.strategySlug).map((d) => [d.strategySlug, d.strategy])).entries()];
+---
+<Base
+  title="ChattQuisitions | Off-Market Deals in Chattanooga"
+  description="We source, contract, and deliver off-market investment opportunities across Chattanooga. Built for local investors who move fast."
+>
+  <main>
+    <section class="hero" data-hero>
+      <div class="hero-stage">
+        {prints[2] && (
+          <figure class="print print-back" data-print="2">
+            <div class="print-img"><img class="mono" src={prints[2].thumb} alt="" /><img class="color" src={prints[2].thumb} alt="" /></div>
+          </figure>
+        )}
+        <div class="hero-copy wrap">
+          <p class="kicker">Chattanooga, TN &middot; Off-market acquisitions</p>
+          <h1><span class="l">Exclusive Deals.</span> <em class="l">In the city we love!</em></h1>
+          <p class="hero-sub">We source, contract, and deliver off-market investment opportunities across Chattanooga. Built for local investors who move fast!</p>
+          <div class="hero-actions">
+            <a class="btn btn-solid" href="#deals">View Deal Board</a>
+            <a class="btn btn-ghost" href="#buyers-list">Join Buyers List</a>
+          </div>
+        </div>
+        {prints[1] && (
+          <figure class="print print-mid" data-print="1">
+            <div class="print-img"><img class="mono" src={prints[1].thumb} alt="" /><img class="color" src={prints[1].thumb} alt="" /></div>
+          </figure>
+        )}
+        {prints[0] && (
+          <figure class="print print-front" data-print="0">
+            <div class="print-img"><img class="mono" src={prints[0].src} alt="" /><img class="color" src={prints[0].src} alt="" /></div>
+          </figure>
+        )}
+      </div>
+    </section>
+
+    <section class="tally wrap" aria-label="Current activity">
+      <dl class="tnum">
+        <div><dt>Active contracts</dt><dd>{stats.activeCount}</dd></div>
+        {stats.totalArv > 0 && <div><dt>Total ARV</dt><dd>{formatMoneyShort(stats.totalArv)}</dd></div>}
+        <div><dt>Counties active</dt><dd>{COUNTIES_ACTIVE}</dd></div>
+      </dl>
+      <a href="#buyers-list" class="tally-link">Suggest a county</a>
+    </section>
+
+    <section class="board wrap" id="deals">
+      <header class="board-head">
+        <h2>The Deal Board</h2>
+        {strategies.length > 1 && (
+          <div class="filters" role="group" aria-label="Filter by strategy">
+            <button type="button" class="filter on" data-filter="all" aria-pressed="true">All</button>
+            {strategies.map(([slug, label]) => <button type="button" class="filter" data-filter={slug} aria-pressed="false">{label}</button>)}
+          </div>
+        )}
+      </header>
+      {deals.length > 0 ? (
+        <div class="grid">{deals.map((p) => <DealCard p={p} />)}</div>
+      ) : (
+        <p class="empty">New deals are added as they go under contract. Join the buyers list and you will hear about them first.</p>
+      )}
+    </section>
+
+    {stories.length > 0 && (
+      <section class="pbp" id="people-before-profit">
+        <div class="wrap pbp-inner">
+          <div class="pbp-intro">
+            <h2>People Before Profit</h2>
+            <p>Not every deal is about the numbers. Some homeowners just need a real solution: avoiding foreclosure, navigating probate, or simply having someone who'll listen without greed and prioritize their needs. These are properties we've stepped in with the mindset of helping first before seeing any return for years to come. We believe doing right by people is worth it, every time.</p>
+          </div>
+          <div class="rail">{stories.map((p) => <DealCard p={p} />)}</div>
+        </div>
+      </section>
+    )}
+
+    <section class="join wrap" id="buyers-list">
+      <div class="join-copy">
+        <h2>What are you looking for?</h2>
+        <p>Tell us your buy box and we'll match you with deals that fit before they hit the list.</p>
+        <p class="fine">SMS consent is optional and not a condition of any purchase or service. See our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.</p>
+      </div>
+      <div class="join-form">
+        <script is:inline src="https://realty.goliathdata.com/embed/loader.js" data-form-id="3b49c19e-6a76-4fb6-9b89-2d54f4bee462"></script>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="wrap contact-inner">
+        <h2>Let's talk deals.</h2>
+        <div class="contact-ways">
+          <a href="tel:+14238746736"><span class="kicker">Call or text</span><strong class="tnum">(423) 874-6736</strong></a>
+          <a href="mailto:jacksonfwood25@gmail.com"><span class="kicker">Email</span><strong>jacksonfwood25@gmail.com</strong></a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  /* ---------- HERO: layered prints that develop from black and white to colour ---------- */
+  .hero { position: relative; height: 175svh; --p: 0; }
+  .hero-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; align-items: center; }
+  .hero-copy { position: relative; z-index: 3; padding-top: 72px; }
+  .hero-copy > * { max-width: 46rem; }
+  .hero-copy > h1 { max-width: none; }
+  .hero h1 { font-size: clamp(3.2rem, 5.9vw, 6.4rem); line-height: 0.98; letter-spacing: -0.03em; margin: 22px 0 28px; font-weight: 800; }
+  .hero h1 .l { display: block; white-space: nowrap; }
+  .hero h1 em { font-style: italic; font-weight: 500; color: var(--ink-soft); }
+  .hero-sub { font-size: clamp(17px, 1.35vw, 19px); color: var(--ink-soft); max-width: 34rem; font-weight: 300; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+  .hero-copy { transform: translate3d(0, calc(var(--p) * -70px), 0); opacity: calc(1 - var(--p) * 0.35); }
+
+  .print { position: absolute; margin: 0; will-change: transform; }
+  .print-img { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius); box-shadow: var(--e3); background: var(--surface-2); }
+  .print-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .print .mono { filter: grayscale(1) contrast(1.08) brightness(0.8); }
+  .print figcaption { margin-top: 10px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .print figcaption span { color: var(--ink-faint); }
+
+  /* Far print: small, soft, slow. Near print: large, sharp, fast. */
+  .print-back  { z-index: 1; width: clamp(150px, 15vw, 240px); right: 31vw; top: 13svh; filter: blur(1.2px) brightness(0.7);
+                 transform: translate3d(0, calc(var(--p) * -60px), 0) scale(calc(1 - var(--p) * 0.04)); }
+  .print-mid   { z-index: 4; width: clamp(190px, 19vw, 300px); right: 6vw; top: 9svh;
+                 transform: translate3d(0, calc(var(--p) * -150px), 0) rotate(1.5deg); }
+  .print-front { z-index: 5; width: clamp(230px, 25vw, 400px); right: 17vw; bottom: -6svh;
+                 transform: translate3d(0, calc(var(--p) * -300px), 0) rotate(-2deg); }
+  .print-front .color { opacity: clamp(0, calc(var(--p) * 2.4), 1); }
+  .print-mid .color   { opacity: clamp(0, calc((var(--p) - 0.2) * 2.4), 1); }
+  .print-back .color  { opacity: clamp(0, calc((var(--p) - 0.4) * 2.4), 1); }
+
+  @media (max-width: 900px) {
+    .hero { height: 150svh; }
+    .hero-stage { align-items: start; }
+    .hero-copy { padding-top: 112px; }
+    .hero h1 { font-size: clamp(2.6rem, 11vw, 4.2rem); margin: 16px 0 18px; }
+    .hero h1 .l { white-space: normal; }
+    .hero-sub { font-size: 16px; }
+    .hero-actions { margin-top: 26px; }
+    .hero-actions .btn { flex: 1 1 auto; }
+    .print figcaption { display: none; }
+    .print-back  { width: 30vw; right: auto; left: 6vw; top: auto; bottom: 7svh; }
+    .print-mid   { width: 34vw; right: 5vw; top: auto; bottom: 12svh; }
+    .print-front { width: 44vw; right: 30vw; bottom: -9svh; }
+  }
+  @media (max-width: 900px) and (max-height: 700px) { .print-back, .print-mid { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero { height: auto; }
+    .hero-stage { position: relative; min-height: 100svh; }
+    .hero-copy, .print { transform: none !important; opacity: 1; }
+    .print .color { opacity: 1 !important; }
+  }
+
+  /* ---------- TALLY ---------- */
+  .tally { position: relative; z-index: 6; display: flex; align-items: end; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding-top: 40px; padding-bottom: 40px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--canvas); }
+  .tally dl { display: flex; gap: clamp(28px, 6vw, 88px); flex-wrap: wrap; }
+  .tally dt { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .tally dd { font-family: var(--font-display); font-size: clamp(32px, 3.4vw, 46px); font-weight: 700; line-height: 1.1; }
+  .tally-link { font-size: 14px; color: var(--ink-soft); }
+  .tally-link:hover { color: var(--ink); }
+
+  /* ---------- DEAL BOARD ---------- */
+  .board { padding-top: var(--section); padding-bottom: var(--section); }
+  .board-head { display: flex; align-items: end; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap; margin-bottom: 44px; }
+  .board h2, .pbp h2, .join h2, .contact h2 { font-size: clamp(2.4rem, 4.6vw, 4rem); }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter { min-height: 38px; padding: 0 16px; border-radius: var(--radius); border: 1px solid var(--line); background: transparent; color: var(--ink-soft); font-size: 14px; cursor: pointer; transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out), background-color 150ms var(--ease-out); }
+  .filter:hover { color: var(--ink); border-color: var(--line-strong); }
+  .filter.on { color: var(--canvas); background: var(--ink); border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 24px; }
+  .grid > :global([hidden]) { display: none; }
+  .empty { color: var(--ink-soft); max-width: 40ch; font-size: 18px; }
+
+  /* Owner rule: two columns on phones, one under 400px. Cards compact themselves by width (see DealCard). */
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+  @media (max-width: 400px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- PEOPLE BEFORE PROFIT: intro left, rail of stories right ---------- */
+  .pbp { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--section) 0; overflow: hidden; }
+  .pbp-inner { display: grid; grid-template-columns: minmax(280px, 0.8fr) 2fr; gap: clamp(32px, 5vw, 80px); align-items: start; }
+  .pbp-intro { position: sticky; top: 120px; }
+  .pbp-intro p { margin-top: 24px; color: var(--ink-soft); font-size: 17px; line-height: 1.75; max-width: 40ch; }
+  .rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, 340px); gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 16px; margin-right: calc(var(--gutter) * -1); padding-right: var(--gutter); scrollbar-width: thin; }
+  .rail > :global(*) { scroll-snap-align: start; }
+  .rail :global(.card) { background: var(--surface-2); }
+  @media (max-width: 900px) {
+    .pbp-inner { grid-template-columns: 1fr; }
+    .pbp-intro { position: static; }
+    .rail { grid-auto-columns: 78vw; }
+  }
+
+  /* ---------- JOIN ---------- */
+  .join { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(32px, 6vw, 96px); padding-top: var(--section); padding-bottom: var(--section); align-items: start; }
+  .join-copy { position: sticky; top: 120px; }
+  .join-copy p { margin-top: 20px; color: var(--ink-soft); font-size: 18px; max-width: 34ch; }
+  .join-copy .fine { font-size: 13px; color: var(--ink-faint); max-width: 44ch; }
+  .join-form { min-height: 520px; }
+  .join-form :global(iframe) { width: 100% !important; max-width: none !important; display: block; }
+  @media (max-width: 900px) {
+    .join { grid-template-columns: 1fr; }
+    .join-copy { position: static; }
+    .join-form { padding: 0; }
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact { border-top: 1px solid var(--line); padding: var(--section) 0; }
+  .contact-inner { display: flex; justify-content: space-between; align-items: end; gap: 40px; flex-wrap: wrap; }
+  .contact-ways { display: flex; gap: clamp(24px, 5vw, 72px); flex-wrap: wrap; }
+  .contact-ways a { text-decoration: none; display: grid; gap: 6px; }
+  .contact-ways strong { font-size: clamp(18px, 1.8vw, 24px); font-weight: 500; border-bottom: 1px solid var(--line-strong); padding-bottom: 4px; transition: border-color 160ms var(--ease-out); }
+  .contact-ways a:hover strong { border-color: var(--ink); }
+</style>
+
+<script>
+  // Hero scroll progress: one value, rAF-throttled, drives every plane through CSS.
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (hero && !reduce) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const span = hero.offsetHeight - innerHeight;
+      const p = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / (span || 1)));
+      hero.style.setProperty('--p', p.toFixed(4));
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+
+  // Strategy filters
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    const f = b.dataset.filter;
+    buttons.forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+    document.querySelectorAll<HTMLElement>('#deals .card').forEach((c) => { c.hidden = f !== 'all' && c.dataset.strategy !== f; });
+  }));
+</script>
